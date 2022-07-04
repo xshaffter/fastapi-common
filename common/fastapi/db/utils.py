@@ -26,7 +26,7 @@ def create_connection(driver=vars.DB_DRIVER, user=vars.DB_USER, pwd=vars.DB_PASS
     assert bool(user) == bool(pwd) == bool(host)
     connection_string = ''
     if user and pwd and host:
-        connection_string = f"{user}:{pwd}/{host}"
+        connection_string = f"{user}:{pwd}@{host}:{port}"
 
     connection_string = '/'.join([connection_string, db_name])
 
