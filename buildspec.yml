@@ -5,6 +5,7 @@ phases:
       - pip3 install -r setup_requirements.txt
   pre_build:
     commands:
+      - pip3 install awscli
       - aws configure set region us-east-1
       - aws codeartifact login --tool twine --domain python --domain-owner 608421743782 --repository pythonic-libraries
   build:
