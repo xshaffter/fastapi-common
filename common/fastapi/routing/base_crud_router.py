@@ -28,10 +28,7 @@ class BaseCRUDRouter(BaseRouter, ABC):
 
         @get('/detail/{id}')
         async def detail(id: int, dal: CRUDDal = Depends(get_dal_dependency(CRUDDal, model=self.model))):
-            data = {
-                'id': id
-            }
-            item = dal.detail(data)
+            item = dal.detail(id=id)
             return item
 
         @delete('/detail/{id}', response_model=RemovedSchema)
@@ -43,8 +40,7 @@ class BaseCRUDRouter(BaseRouter, ABC):
         async def update_detail(id: int, request: request_schema,
                                 dal: CRUDDal = Depends(get_dal_dependency(CRUDDal, model=self.model))):
             data = dict(request.data)
-            data['id'] = id
-            item = dal.update(data)
+            item = dal.update(data, id=id)
             return item
 
         @post('/create')

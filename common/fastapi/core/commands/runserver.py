@@ -11,4 +11,4 @@ class RunServerCommand(BaseCommand):
 
     def handle(self, *args, **kwargs):
         host, port = self.host.split(':')
-        uvicorn.run("enroute.common.fastapi.core.app:main_app", host=host, port=int(port), reload=True)
+        uvicorn.run("common.fastapi.core.app:main_app", host=host, port=int(port), reload=True)

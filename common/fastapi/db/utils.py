@@ -1,4 +1,5 @@
 import re
+from typing import TypeVar
 
 from sqlalchemy import create_engine, Column, Integer
 from sqlalchemy.orm import declared_attr
@@ -19,6 +20,16 @@ class BaseModel(object):
 
 parameters = get_param_manager()
 vars = parameters.variables
+
+Model = TypeVar("Model", bound=BaseModel)
+
+
+def query_perform(model: Model, **query):
+    query_performed = []
+    for key, value in query.items():
+        query_performed.append(getattr(model, key) == value)
+    print(query_performed)
+    return query_performed
 
 
 def create_connection(driver=vars.DB_DRIVER, user=vars.DB_USER, pwd=vars.DB_PASS, host=vars.DB_HOST, port=vars.DB_PORT,

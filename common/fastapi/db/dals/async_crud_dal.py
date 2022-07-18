@@ -5,6 +5,7 @@ from sqlalchemy import delete
 from sqlalchemy.future import select
 
 from .base_dal import AsyncDal
+from ..utils import query_perform
 
 T = TypeVar("T")
 
@@ -38,11 +39,9 @@ class AsyncCRUDDal(Generic[T], AsyncDal):
         return item
 
     async def get_object(self, **query):
-        query_performed = True
-        for key, value in query.items():
-            query_performed = query_performed and getattr(self.model, key) == value
+        query_performed = query_perform(self.model, **query)
 
-        stmt = select(self.model).filter(query_performed)
+        stmt = select(self.model).filter(*query_performed)
         result = await self._db.execute(stmt)
         return result.scalars().first()
 
@@ -60,11 +59,11 @@ class AsyncCRUDDal(Generic[T], AsyncDal):
         if self._auto_commit:
             await self.commit()
 
-    async def update(self, data) -> T:
-        item = self.get_object_or_404(id=data['id'])
-        update_values = data.copy()
-        update_values.pop('id')
-        update_data = {getattr(self.model, key): value for key, value in update_values.items()}
+    async def update(self, data, **query) -> T:
+        item = self.get_object_or_404(**query)
+        if 'id' in data:
+            raise ValueError("updated data cannot include object's id")
+        update_data = {getattr(self.model, key): value for key, value in data.items()}
         item.update(update_data)
 
         if self._auto_commit:
