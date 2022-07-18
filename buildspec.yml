@@ -2,7 +2,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - pip3 install -r setup_requirements
+      - pip3 install -r setup_requirements.txt
   pre_build:
     commands:
       - aws configure set region us-east-1
