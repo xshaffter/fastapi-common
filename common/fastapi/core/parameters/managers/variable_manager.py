@@ -16,6 +16,8 @@ class VariableManager(Manager):
     SECRET_KEY: str = Environ(None)
     STATIC_FOLDER: str = Environ(None)
     STATIC_URL: str = Environ(None)
+    ACCESS_KEY_ID: str = Environ(None)
+    SECRET_ACCESS_KEY: str = Environ(None)
 
     def backup(self):
         self._backup_data.append(vars(self).copy())

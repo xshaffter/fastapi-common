@@ -10,6 +10,7 @@ requirements = [
     "uvicorn",
     "pytest",
     "pydantic",
+    "boto3",
 ]
 
 setup(

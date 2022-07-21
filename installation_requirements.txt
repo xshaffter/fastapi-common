@@ -4,3 +4,4 @@ SQLAlchemy
 uvicorn
 pytest
 pydantic
+boto3
