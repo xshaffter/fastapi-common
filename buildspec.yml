@@ -13,4 +13,4 @@ phases:
       - python setup.py sdist --formats=gztar
   post_build:
     commands:
-      - twine upload --repository codeartifact dist/fastapi-common-0.3.7.tar.gz
+      - twine upload --repository codeartifact dist/*
