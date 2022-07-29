@@ -43,6 +43,8 @@ def create_connection(driver=vars.DB_DRIVER, user=vars.DB_USER, pwd=vars.DB_PASS
 
     engine = create_engine(
         f"{driver}://{connection_string}",
+        pool_size=30,
+        max_overflow=40,
         execution_options={
             "isolation_level": "REPEATABLE READ"
         }
