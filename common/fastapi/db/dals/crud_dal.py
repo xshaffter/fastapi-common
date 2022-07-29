@@ -27,7 +27,7 @@ class CRUDDal(Generic[T], BaseDal):
 
     def list(self, **query) -> List[T]:
         query_performed = query_perform(self.model, **query)
-        items = self._db.query(self.model).filter(*query_performed)
+        items = self._db.query(self.model).filter(*query_performed).all()
         return items
 
     def get_object_or_404(self, **query) -> T:
