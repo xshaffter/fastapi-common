@@ -27,8 +27,9 @@ class AsyncCRUDDal(Generic[T], AsyncDal):
             await self._db.refresh(item)
         return item
 
-    async def list(self, data=None) -> List[T]:
-        stmt = select(self.model)
+    async def list(self, **query) -> List[T]:
+        query_performed = query_perform(self.model, **query)
+        stmt = select(self.model).filter(*query_performed)
         result = await self._db.execute(stmt)
         return result.scalars()
 
