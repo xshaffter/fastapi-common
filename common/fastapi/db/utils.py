@@ -38,15 +38,15 @@ def get_refs(key: str):
     return column, escape
 
 
-def define_operation(column, escaped_operation, value):
+def define_operation(column: Column, escaped_operation, value):
     eq_result = column == value
     results = {
         'gt': column > value,
         'gte': column >= value,
         'lt': column < value,
         'lte': column <= value,
-        'in': column in value,
-        'contains': value in column,
+        'in': column.in_(value),
+        'contains': column.contains(value),
         'iexact': value.lower() == column.lower(),
         'ieq': value.lower() == column.lower(),
         'exact': eq_result,
