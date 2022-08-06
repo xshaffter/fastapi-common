@@ -55,23 +55,23 @@ operations = [
 def define_operation(column: Column, escaped_operation, value):
     eq_result = column == value
     if escaped_operation == 'gt':
-        return column > value,
+        return column > value
     elif escaped_operation == 'gte':
-        return column >= value,
+        return column >= value
     elif escaped_operation == 'lt':
-        return column < value,
+        return column < value
     elif escaped_operation == 'lte':
-        return column <= value,
+        return column <= value
     elif escaped_operation == 'in':
-        return column.in_(value),
+        return column.in_(value)
     elif escaped_operation == 'contains':
-        return column.contains(value),
+        return column.contains(value)
     elif escaped_operation == 'iexact':
-        return value.lower() == column.lower(),
+        return value.lower() == column.lower()
     elif escaped_operation == 'ieq':
-        return value.lower() == column.lower(),
+        return value.lower() == column.lower()
     elif escaped_operation == 'exact':
-        return eq_result,
+        return eq_result
     elif escaped_operation == 'eq':
         return eq_result
     elif escaped_operation is None:
