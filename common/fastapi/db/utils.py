@@ -38,27 +38,47 @@ def get_refs(key: str):
     return column, escape
 
 
+operations = [
+    'gt',
+    'gte',
+    'lt',
+    'lte',
+    'in',
+    'contains',
+    'iexact',
+    'ieq',
+    'exact',
+    'eq',
+]
+
+
 def define_operation(column: Column, escaped_operation, value):
     eq_result = column == value
-    results = {
-        'gt': column > value,
-        'gte': column >= value,
-        'lt': column < value,
-        'lte': column <= value,
-        'in': column.in_(value),
-        'contains': column.contains(value),
-        'iexact': value.lower() == column.lower(),
-        'ieq': value.lower() == column.lower(),
-        'exact': eq_result,
-        'eq': eq_result
-    }
-    if escaped_operation in results:
-        return results[escaped_operation]
+    if escaped_operation == 'gt':
+        return column > value,
+    elif escaped_operation == 'gte':
+        return column >= value,
+    elif escaped_operation == 'lt':
+        return column < value,
+    elif escaped_operation == 'lte':
+        return column <= value,
+    elif escaped_operation == 'in':
+        return column.in_(value),
+    elif escaped_operation == 'contains':
+        return column.contains(value),
+    elif escaped_operation == 'iexact':
+        return value.lower() == column.lower(),
+    elif escaped_operation == 'ieq':
+        return value.lower() == column.lower(),
+    elif escaped_operation == 'exact':
+        return eq_result,
+    elif escaped_operation == 'eq':
+        return eq_result
     elif escaped_operation is None:
         return eq_result
     else:
         raise QueryBuildingException(
-            f"{escaped_operation} operation doesn't exist, please use one of the following: {results.keys()}")
+            f"{escaped_operation} operation doesn't exist, please use one of the following: {operations}")
 
 
 def query_perform(model: Model, **query):
