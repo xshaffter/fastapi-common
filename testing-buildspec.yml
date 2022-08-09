@@ -1,0 +1,10 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - pip3 install -r setup_requirements.txt
+  pre_build:
+    commands:
+  build:
+    commands:
+      - pytest -x -v tests/

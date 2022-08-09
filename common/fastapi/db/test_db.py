@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, Integer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker, Session, declarative_base, declared_attr
-from sqlalchemy.testing.schema import Column
+from sqlalchemy import Column
 
 from common.fastapi.core.parameters import get_param_manager
 from common.fastapi.db import BaseDal
@@ -13,7 +13,7 @@ from common.fastapi.db import BaseDal
 
 class BaseModel(object):
     __abstract__ = True
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, unique=True)
 
     @declared_attr
     def __tablename__(self):
