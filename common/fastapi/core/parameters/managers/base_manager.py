@@ -43,14 +43,18 @@ class Manager(ABC):
             value = first_or_none(filter(lambda param: f'--{field_name}' in param, sys.argv))
             if value:
                 return '='.join(value.split('=')[1:])
-            else:
+            elif field_type == SysArgv:
                 try:
                     return sys.argv[self._last_index]
                 except IndexError:
                     pass
         if field_type in [Environ, Mixed]:
             return os.environ.get(field_name, None)
-
+        if field_type == Mixed:
+            try:
+                return sys.argv[self._last_index]
+            except IndexError:
+                pass
         if field.default is Ellipsis:
             raise ValueError(f'value {field_name} must be setted')
         return field.default

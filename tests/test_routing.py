@@ -7,14 +7,12 @@ from common.fastapi.routing import BaseRouter, BaseCRUDRouter
 import pytest
 
 
-async def common_parameters(
-        q: Union[str, None] = None, skip: int = 0, limit: int = 100
-):
+async def common_parameters(q: Union[str, None] = None, skip: int = 0, limit: int = 100):
     return {"q": q, "skip": skip, "limit": limit}
 
 
 @pytest.fixture
-def testing_basic_router():
+def testing_basic_crud_router():
     class TestingBasicRouter(BaseCRUDRouter):
         pass
 
@@ -50,8 +48,8 @@ def testing_dependency_router():
     return TestingCustomRouter()
 
 
-def test_basic_router_functions(testing_basic_router):
-    routes = [route.name for route in testing_basic_router.routes]
+def test_basic_router_functions(testing_basic_crud_router):
+    routes = [route.name for route in testing_basic_crud_router.routes]
     assert routes == ['create', 'list', 'update_detail', 'remove', 'detail']
 
 
@@ -63,9 +61,3 @@ def test_custom_router_functions(testing_custom_router):
 def test_dependency_router_functions(testing_dependency_router):
     for route in testing_dependency_router.routes:  # type: APIRoute
         assert common_parameters in [depend.dependency for depend in route.dependencies]
-
-# def test_custom_router_params(testing_custom_router):
-#     routes = []
-#     for route in testing_custom_router.routes:  # type: APIRoute
-#         routes.append(route.)
-#     assert routes == ['some_route', 'create', 'list', 'update_detail', 'remove', 'detail']

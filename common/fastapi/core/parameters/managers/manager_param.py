@@ -38,7 +38,7 @@ class Mixed(ManagerParameter[T]):
     """
     A generic manager param which receives a type and has a default value.
     This parameter could be overwritten by sys.argv and os.environ, taking priority from sys.argv, so you can run
-    different para, values without needing to overwrite a file
+    different param, values without needing to overwrite a file
     """
 
 
