@@ -1,8 +1,8 @@
 import inspect
 from abc import ABC
-from typing import Type, List, Tuple, Union
+from typing import Type, List, Tuple, Union, Optional, Sequence
 
-from fastapi import APIRouter
+from fastapi import APIRouter, params
 
 from ..utils.functions import is_view_method
 
@@ -15,7 +15,9 @@ class BaseRouter(APIRouter, ABC):
     """
     model: Type = None
 
-    def __init__(self, extra_funcs: Union[Tuple[Tuple], List[Tuple]] = tuple(), *args, **kwargs):
+    def __init__(self, extra_funcs: Union[Tuple[Tuple], List[Tuple]] = tuple(),
+                 default_dependencies: Optional[Sequence[params.Depends]] = None, *args,
+                 **kwargs):
         super().__init__(*args, **kwargs)
         methods = inspect.getmembers(self, predicate=is_view_method)
         meth_names = [name for name, func in methods]
@@ -33,23 +35,23 @@ class BaseRouter(APIRouter, ABC):
             if 'summary' not in action.kwargs:
                 action.kwargs['summary'] = getattr(action, '__docs__', None)
             if action.request_method == 'GET':
-                action_func = self.get(*action.args, **action.kwargs)
+                action_func = self.get(dependencies=default_dependencies, *action.args, **action.kwargs)
             elif action.request_method == 'POST':
-                action_func = self.post(*action.args, **action.kwargs)
+                action_func = self.post(dependencies=default_dependencies, *action.args, **action.kwargs)
             elif action.request_method == 'PUT':
-                action_func = self.put(*action.args, **action.kwargs)
+                action_func = self.put(dependencies=default_dependencies, *action.args, **action.kwargs)
             elif action.request_method == 'DELETE':
-                action_func = self.delete(*action.args, **action.kwargs)
+                action_func = self.delete(dependencies=default_dependencies, *action.args, **action.kwargs)
             elif action.request_method == 'HEAD':
-                action_func = self.head(*action.args, **action.kwargs)
+                action_func = self.head(dependencies=default_dependencies, *action.args, **action.kwargs)
             elif action.request_method == 'OPTIONS':
-                action_func = self.options(*action.args, **action.kwargs)
+                action_func = self.options(dependencies=default_dependencies, *action.args, **action.kwargs)
             elif action.request_method == 'TRACE':
-                action_func = self.trace(*action.args, **action.kwargs)
+                action_func = self.trace(dependencies=default_dependencies, *action.args, **action.kwargs)
             elif action.request_method == 'PATCH':
-                action_func = self.patch(*action.args, **action.kwargs)
+                action_func = self.patch(dependencies=default_dependencies, *action.args, **action.kwargs)
             elif action.request_method == 'CONNECT':
-                action_func = self.connect(*action.args, **action.kwargs)
+                action_func = self.connect(dependencies=default_dependencies, *action.args, **action.kwargs)
 
             if action_func:
                 action_func(action)

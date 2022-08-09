@@ -66,6 +66,9 @@ def define_operation(column: Column, escaped_operation, value):
         return column.in_(value)
     elif escaped_operation == 'contains':
         return column.contains(value)
+    elif escaped_operation == 'range':
+        cleft, cright = value
+        return column.between(cleft, cright)
     elif escaped_operation == 'iexact':
         return value.lower() == column.lower()
     elif escaped_operation == 'ieq':
