@@ -4,9 +4,10 @@ from typing import Type, List
 from fastapi import Depends
 from pydantic import BaseModel as BaseSchema
 
-from ..db import get_dal, CRUDDal, get_dal_dependency
-from ..schemas import BasicRequestSchema, RemovedSchema
 from . import get, post, put, delete, BaseRouter
+from ..db import CRUDDal, get_dal_dependency
+from ..schemas import BasicRequestSchema, HTTPResponseModel, HTTP_200_REMOVED, HTTP_200_UPDATED, \
+    HTTP_201_CREATED
 
 
 class BaseCRUDRouter(BaseRouter, ABC):
@@ -31,24 +32,24 @@ class BaseCRUDRouter(BaseRouter, ABC):
             item = dal.detail(id=id)
             return item
 
-        @delete('/detail/{id}', response_model=RemovedSchema)
+        @delete('/detail/{id}', response_model=HTTPResponseModel)
         async def remove(id: int, dal: CRUDDal = Depends(get_dal_dependency(CRUDDal, model=self.model))):
             dal.delete(id=id)
-            return {'removed': True}
+            return HTTP_200_REMOVED
 
-        @put('/detail/{id}')
+        @put('/detail/{id}', response_model=HTTPResponseModel)
         async def update_detail(id: int, request: request_schema,
                                 dal: CRUDDal = Depends(get_dal_dependency(CRUDDal, model=self.model))):
-            data = dict(request.data)
-            item = dal.update(data, id=id)
-            return item
+            data = request.data.dict()
+            dal.update(data, id=id)
+            return HTTP_200_UPDATED
 
-        @post('/create')
+        @post('/create', response_model=HTTPResponseModel)
         async def create(request: request_schema,
                          dal: CRUDDal = Depends(get_dal_dependency(CRUDDal, model=self.model))):
-            data = dict(request.data)
-            item = dal.create(data)
-            return item
+            data = request.data.dict()
+            dal.create(data)
+            return HTTP_201_CREATED
 
         return ('create', create), ('list', list), ('update_detail', update_detail), ('remove', remove), (
             'detail', detail)

@@ -19,4 +19,4 @@ HTTP_404_DETAIL = HTTPResponseModel(status_code=404, detail=dict(detail='HTTP 40
 HTTP_200_UPDATED = HTTPResponseModel(status_code=200, detail=dict(detail='Updated'))
 HTTP_200_REMOVED = HTTPResponseModel(status_code=200, detail=dict(detail='Removed'))
 HTTP_200_ACCEPTED = HTTPResponseModel(status_code=200, detail=dict(detail='Accepted'))
-HTTP_404_CREATED = HTTPResponseModel(status_code=200, detail=dict(detail='Created'))
+HTTP_201_CREATED = HTTPResponseModel(status_code=200, detail=dict(detail='Created'))
