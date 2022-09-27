@@ -1,0 +1,7 @@
+fastapi
+requests
+SQLAlchemy
+uvicorn
+pytest
+pydantic
+boto3
