@@ -1,8 +1,5 @@
 from setuptools import find_packages, setup
 from common.fastapi import __version__
-
-with open("README.md") as f:
-    readme = f.read()
 requirements = [
     "fastapi",
     "requests",
@@ -18,7 +15,7 @@ setup(
     version=__version__,
     url="https://github.com/xshaffter/fastapi-common",
     description="Custom Fastapi library and tools",
-    long_description=readme,
+    readme="README.md",
     author="Alfredo Martinez",
     author_email="xshaffter@gmail.com",
     maintainer="Alfredo Martínez",
