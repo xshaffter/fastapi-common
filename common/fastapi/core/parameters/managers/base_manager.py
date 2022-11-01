@@ -49,12 +49,15 @@ class Manager(ABC):
                 except IndexError:
                     pass
         if field_type in [Environ, Mixed]:
-            return os.environ.get(field_name, None)
+            res = os.environ.get(field_name, None)
+            if res is not None:
+                return res
         if field_type == Mixed:
             try:
                 return sys.argv[self._last_index]
             except IndexError:
                 pass
+
         if field.default is Ellipsis:
             raise ValueError(f'value {field_name} must be setted')
         return field.default
@@ -92,9 +95,15 @@ class Manager(ABC):
 
     def _set_parameters_by_predicate(self, target, predicate):
         fields = self._get_parameters_by_predicate(predicate)
+        errors: List[ValueError] = []
         for field, field_type in fields:
-            value = self._get_field_by_type(field, field_type)
-            setattr(target, field, value)
+            try:
+                value = self._get_field_by_type(field, field_type)
+                setattr(target, field, value)
+            except ValueError as e:  # type: ValueError
+                errors.append(e.args[0])
+        if errors:
+            raise ValueError(errors)
 
     def _set_parameters(self):
         self._set_parameters_by_predicate(target=self, predicate=is_bool_param)

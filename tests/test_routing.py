@@ -1,10 +1,9 @@
 from typing import Union
 
-from fastapi import APIRouter
+import pytest
 from fastapi.routing import APIRoute
 
-from common.fastapi.routing import BaseRouter, BaseCRUDRouter
-import pytest
+from common.fastapi.routing import BaseCRUDRouter
 
 
 async def common_parameters(q: Union[str, None] = None, skip: int = 0, limit: int = 100):
