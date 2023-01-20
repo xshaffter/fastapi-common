@@ -1,6 +1,9 @@
-from typing import TypeVar, Type, List, Generic, get_args
+from typing import TypeVar, Type, List, Generic, get_args, Union, Dict
 
 from fastapi import HTTPException
+from sqlalchemy.orm import RelationshipProperty
+from pydantic import BaseModel
+from sqlalchemy import func
 
 from .base_dal import Dal as BaseDal
 from ..utils import query_perform
@@ -16,13 +19,38 @@ class CRUDDal(Generic[T], BaseDal):
         super().__init__(db, *args, **kwargs)
         self.model = model or get_args(self.__orig_bases__[0])[0]
 
-    def create(self, data) -> T:
+    def create(self, data: Union[BaseModel, Dict]):
+        if isinstance(data, BaseModel):
+            return self._create(data)
+        elif isinstance(data, Dict):
+            return self.__create(data)
+
+    def _get_last_id(self):
+        result = self._db.query(func.max(self.model.id)).first()
+        return result[0] or 0
+
+    def _create(self, data: BaseModel) -> T:
+        variables = dict(data)
+        clean_data = dict(data)
+        nested = filter(lambda item: isinstance(item[1], BaseModel), variables.items())
+        for key, value in nested:
+            clean_data.pop(key)
+            sub_dal = self.get_dal(CRUDDal, model=value.Config.model)
+            instance = sub_dal.create(value)
+            clean_data[f"{key}_id"] = instance.id
+        return self.__create(clean_data)
+
+    def __create(self, data: Dict) -> T:
         item = self.model(**data)
         self._db.add(item)
+        last_id = self._get_last_id()
+        item.id = last_id + 1
 
         if self._auto_commit:
             self.commit()
             self._db.refresh(item)
+        else:
+            self.flush()
         return item
 
     def list(self, **query) -> List[T]:
@@ -57,7 +85,7 @@ class CRUDDal(Generic[T], BaseDal):
         if self._auto_commit:
             self.commit()
 
-    def update(self, data, **query) -> T:
+    def update(self, data: BaseModel, **query) -> T:
         item_query = self.get_object_query(**query)
         if 'id' in data:
             raise ValueError("updated data cannot include object's id")
@@ -66,6 +94,8 @@ class CRUDDal(Generic[T], BaseDal):
 
         if self._auto_commit:
             self.commit()
+        else:
+            self.flush()
         return item_query.first()
 
     @classmethod

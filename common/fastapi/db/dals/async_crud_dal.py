@@ -25,6 +25,8 @@ class AsyncCRUDDal(Generic[T], AsyncDal):
         if self._auto_commit:
             await self.commit()
             await self._db.refresh(item)
+        else:
+            await self.flush()
         return item
 
     async def list(self, **query) -> List[T]:
@@ -33,6 +35,7 @@ class AsyncCRUDDal(Generic[T], AsyncDal):
         result = await self._db.execute(stmt)
         return result.scalars()
 
+    # TODO: might fail because no async function
     def get_object_or_404(self, **query) -> T:
         item = self.get_object(**query)
         if not item:
@@ -46,8 +49,8 @@ class AsyncCRUDDal(Generic[T], AsyncDal):
         result = await self._db.execute(stmt)
         return result.scalars().first()
 
-    def detail(self, **query) -> T:
-        return self.get_object_or_404(**query)
+    async def detail(self, **query) -> T:
+        return await self.get_object_or_404(**query)
 
     async def delete_all(self):
         query = delete(self.model)
@@ -59,6 +62,8 @@ class AsyncCRUDDal(Generic[T], AsyncDal):
         self._db.delete(item)
         if self._auto_commit:
             await self.commit()
+        else:
+            await self.flush()
 
     async def update(self, data, **query) -> T:
         item = self.get_object_or_404(**query)
@@ -69,6 +74,8 @@ class AsyncCRUDDal(Generic[T], AsyncDal):
 
         if self._auto_commit:
             await self.commit()
+        else:
+            await self.flush()
         return item.first()
 
     @classmethod

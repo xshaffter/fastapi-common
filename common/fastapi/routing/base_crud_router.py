@@ -40,14 +40,14 @@ class BaseCRUDRouter(BaseRouter, ABC):
         @put('/detail/{id}', response_model=HTTPResponseModel)
         async def update_detail(id: int, request: request_schema,
                                 dal: CRUDDal = Depends(get_dal_dependency(CRUDDal, model=self.model))):
-            data = request.data.dict()
+            data = request.data
             dal.update(data, id=id)
             return HTTP_200_UPDATED
 
         @post('/create', response_model=HTTPResponseModel)
         async def create(request: request_schema,
                          dal: CRUDDal = Depends(get_dal_dependency(CRUDDal, model=self.model))):
-            data = request.data.dict()
+            data = request.data
             dal.create(data)
             return HTTP_201_CREATED
 
