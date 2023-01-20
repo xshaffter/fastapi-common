@@ -1,6 +1,5 @@
 from typing import Type
 
-
 class Dal:
     _auto_commit: bool = True
 
@@ -9,12 +8,15 @@ class Dal:
         self._auto_commit = auto_commit
 
     # noinspection PyPep8Naming
-    def get_dal(self, DalType: Type['Dal']):
-        dal = DalType(self._db, False)
+    def get_dal(self, DalType: Type['Dal'], *args, **kwargs):
+        dal = DalType(db=self._db, auto_commit=False, *args, **kwargs)
         return dal
 
     def commit(self):
         self._db.commit()
+
+    def flush(self):
+        self._db.flush()
 
 
 class AsyncDal:
@@ -26,8 +28,11 @@ class AsyncDal:
 
     # noinspection PyPep8Naming
     def get_dal(self, DalType: Type['AsyncDal']):
-        dal = DalType(self._db, False)
+        dal = DalType(db=self._db, auto_commit=False)
         return dal
 
     async def commit(self):
         await self._db.commit()
+
+    async def flush(self):
+        await self._db.flush()

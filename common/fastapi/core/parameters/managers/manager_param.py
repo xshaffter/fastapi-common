@@ -10,7 +10,7 @@ class ManagerParameter(Generic[T]):
     """
     default: T
 
-    def __init__(self, default: T) -> object:
+    def __init__(self, default: T):
         """
 
         :rtype: object
