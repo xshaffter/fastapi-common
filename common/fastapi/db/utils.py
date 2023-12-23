@@ -1,7 +1,7 @@
 import re
 from typing import TypeVar
 
-from sqlalchemy import create_engine, Column, Integer
+from sqlalchemy import create_engine, Column, Integer, URL
 from sqlalchemy.orm import declared_attr
 
 from common.fastapi.core.parameters import get_param_manager
@@ -13,6 +13,7 @@ class QueryBuildingException(Exception):
 
 class BaseModel(object):
     __abstract__ = True
+    __schema__ = None
 
     id = Column(Integer, primary_key=True)
 
@@ -20,6 +21,14 @@ class BaseModel(object):
     def __tablename__(cls):
         snake_class = re.sub(r'(?<!^)(?=[A-Z])', '_', cls.__name__).lower()
         return f'{snake_class}s'
+
+    @declared_attr
+    def __table_args__(cls):
+        args = {}
+        if cls.__schema__:
+            args['schema'] = cls.__schema__
+
+        return args
 
 
 parameters = get_param_manager()
@@ -97,14 +106,20 @@ def query_perform(model: Model, **query):
 def create_connection(driver=vars.DB_DRIVER, user=vars.DB_USER, pwd=vars.DB_PASS, host=vars.DB_HOST, port=vars.DB_PORT,
                       db_name=vars.DB_NAME):
     assert bool(user) == bool(pwd) == bool(host)
-    connection_string = ''
-    if user and pwd and host:
-        connection_string = f"{user}:{pwd}@{host}:{port}"
+    url_object = URL.create(
+        driver,
+        username=user,
+        password=pwd,  # plain (unescaped) text
+        host=host,
+        port=port,
+        database=db_name,
+    )
 
-    connection_string = '/'.join([connection_string, db_name])
+    if parameters.flags.DEBUG:
+        print(url_object)
 
     engine = create_engine(
-        f"{driver}://{connection_string}",
+        url_object,
         pool_size=30,
         max_overflow=40,
         execution_options={
