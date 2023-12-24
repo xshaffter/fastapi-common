@@ -18,8 +18,8 @@ class AwsConfig(object):
 
         import boto3
         return boto3.Session(
-            aws_access_key_id=self.variables.ACCESS_KEY_ID,
-            aws_secret_access_key=self.variables.SECRET_ACCESS_KEY
+            aws_access_key_id=self.param_manager.variables.ACCESS_KEY_ID,
+            aws_secret_access_key=self.param_manager.variables.SECRET_ACCESS_KEY
         )
 
     def __getattr__(self, item):
@@ -36,4 +36,4 @@ class AwsConfig(object):
             elif aws_type == 'resource':
                 return lambda: session.resource(client_name)
         else:
-            return super(AwsConfig, self).__getattr__(item)
+            return self.__getattribute__(item)
